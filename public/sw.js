@@ -1,5 +1,11 @@
-const CACHE_NAME = "instagram-clone-v1";
-const urlsToCache = ["/", "/home", "/login"];
+const CACHE_NAME = "instagram-clone-v2";
+const urlsToCache = [
+  "/",
+  "/home",
+  "/login",
+  "/manifest.json",
+  "/icons/instagram.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -10,6 +16,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
   event.respondWith(
     caches
       .match(event.request)
