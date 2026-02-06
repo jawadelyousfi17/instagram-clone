@@ -345,7 +345,7 @@ const ProfilePage = ({
                   </>
                 ) : (
                   <div className="flex flex-col gap-0 leading-4.5">
-                    <span className="text-foreground/60">Athlete</span>
+                    <span className="text-foreground/60">Artist</span>
                     {profile?.bio.split("\n").map((line, i) => (
                       <p key={i}>{line}</p>
                     ))}
@@ -382,7 +382,7 @@ const ProfilePage = ({
                       y2="8.471"
                     ></line>
                   </svg>
-                  apple.co/mlsmessi and 4 more
+                  open2.app/7ELMETADO7 and 2 more
                 </span>
 
                 <span className="text-[#0046f6]">Miami, florida</span>
