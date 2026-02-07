@@ -385,7 +385,7 @@ const ProfilePage = ({
                   open2.app/7ELMETADO7 and 2 more
                 </span>
 
-                <span className="text-[#0046f6]">Miami, florida</span>
+                <span className="text-[#0046f6]"></span>
 
                 <div className="bg-[hsl(190,30%,95%)] p-4 rounded-xl mt-2">
                   <p className="text-md font-semibold">
