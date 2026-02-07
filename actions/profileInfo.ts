@@ -1,6 +1,6 @@
-'use server';
+"use server";
 
-import axios from 'axios';
+import axios from "axios";
 
 // 1. Define the shape of the API Response based on your snippet
 interface InstagramProfileResponse {
@@ -38,18 +38,20 @@ interface FormattedProfile {
   isPrivate: boolean;
 }
 
-export async function getInstagramProfile(username: string): Promise<FormattedProfile | { error: string }> {
+export async function getInstagramProfile(
+  username: string,
+): Promise<FormattedProfile | { error: string }> {
   const options = {
-    method: 'POST',
-    url: 'https://instagram120.p.rapidapi.com/api/instagram/profile',
+    method: "POST",
+    url: "https://instagram120.p.rapidapi.com/api/instagram/profile",
     headers: {
-      'x-rapidapi-key': '91ce630dc3msh1438c76c8ca9858p109dc8jsn5681bbb1d9fe', // Ideally store in process.env.RAPIDAPI_KEY
-      'x-rapidapi-host': 'instagram120.p.rapidapi.com',
-      'Content-Type': 'application/json'
+      "x-rapidapi-key": "763cf1c4b9msh06c005a3b61ac0ap1158e4jsn4a236ac9db52", // Ideally store in process.env.RAPIDAPI_KEY
+      "x-rapidapi-host": "instagram120.p.rapidapi.com",
+      "Content-Type": "application/json",
     },
     data: {
-      username: username
-    }
+      username: username,
+    },
   };
 
   try {
@@ -57,7 +59,7 @@ export async function getInstagramProfile(username: string): Promise<FormattedPr
     const data = response.data?.result;
 
     if (!data) {
-      return { error: 'Profile not found' };
+      return { error: "Profile not found" };
     }
 
     // 3. Map the raw API data to your clean structure
@@ -72,13 +74,12 @@ export async function getInstagramProfile(username: string): Promise<FormattedPr
         following: data.edge_follow?.count || 0,
         posts: data.edge_owner_to_timeline_media?.count || 0,
       },
-      isPrivate: data.is_private
+      isPrivate: data.is_private,
     };
 
     return formattedProfile;
-
   } catch (error) {
-    console.error('Instagram Profile API Error:', error);
-    return { error: 'Failed to fetch Instagram profile' };
+    console.error("Instagram Profile API Error:", error);
+    return { error: "Failed to fetch Instagram profile" };
   }
 }
