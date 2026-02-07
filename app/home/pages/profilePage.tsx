@@ -13,6 +13,7 @@ import HighlightStory from "../_components/highlight";
 import NewStory from "../_components/newStory";
 import AddToStory from "./addToStory";
 import { AnimatePresence, motion } from "framer-motion";
+import { i } from "framer-motion/client";
 
 interface Post {
   type: "video" | "image" | "carousel";
@@ -562,20 +563,22 @@ const ProfilePage = ({
                       <Skeleton key={index} className="aspect-square w-full" />
                     ))
                   : // Show actual posts
-                    posts.map((post, index) => (
-                      <InstagramPostThumb
-                        key={index}
-                        type={
-                          index < 3
-                            ? "pin"
-                            : post.type === "video"
-                              ? "reel"
-                              : "carousel"
-                        }
-                        likes={post.likes}
-                        image={post.coverImage}
-                      />
-                    ))}
+                    posts
+                      .filter((p, i) => i > 0)
+                      .map((post, index) => (
+                        <InstagramPostThumb
+                          key={index}
+                          type={
+                            index < 3
+                              ? "pin"
+                              : post.type === "video"
+                                ? "reel"
+                                : "carousel"
+                          }
+                          likes={post.likes}
+                          image={post.coverImage}
+                        />
+                      ))}
               </div>
             </div>
           </div>
