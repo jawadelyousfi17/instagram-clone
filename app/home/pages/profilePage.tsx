@@ -27,6 +27,81 @@ interface Highlight {
   cover: string;
 }
 
+interface ProfileVisitor {
+  username: string;
+  avatar: string;
+  visitCount: number;
+}
+
+// Profile visitors data
+const profileVisitors: ProfileVisitor[] = [
+  {
+    username: "chinan.md",
+    avatar: "/images/avatars/a1.jpg",
+    visitCount: 1,
+  },
+   {
+    username: "kr_788__",
+    avatar: "/images/avatars/a0.jpeg",
+    visitCount: 1,
+  },
+  {
+    username: "abde.hamdani7",
+    avatar: "/images/avatars/a2.jpg",
+    visitCount: 2,
+  },
+  {
+    username: "jihad_ghali8",
+    avatar: "/images/avatars/a3.jpg",
+    visitCount: 1,
+  },
+  {
+    username: "ghali_yyu",
+    avatar: "/images/avatars/a0.jpeg",
+    visitCount: 2,
+  },
+  {
+    username: "lxi7.m",
+    avatar: "/images/avatars/a4.jpg",
+    visitCount: 1,
+  },
+  {
+    username: "oleken_8__",
+    avatar: "/images/avatars/a0.jpeg",
+    visitCount: 1,
+  },
+  {
+    username: "daniel.wilson",
+    avatar: "/images/avatars/a0.jpeg",
+    visitCount: 1,
+  },
+  {
+    username: "sophia_moore",
+    avatar: "/images/avatars/a0.jpeg",
+    visitCount: 1,
+  },
+  {
+    username: "james_jackson",
+    avatar: "/images/avatars/avatar4.jpg",
+    visitCount: 7,
+  },
+  {
+    username: "mia_martin",
+    avatar: "/images/avatars/avatar5.jpg",
+    visitCount: 14,
+  },
+  {
+    username: "lucas.lee",
+    avatar: "/images/avatars/avatar1.jpg",
+    visitCount: 3,
+  },
+  {
+    username: "ava_white",
+    avatar: "/images/avatars/avatar2.jpg",
+    visitCount: 9,
+  },
+];
+
 // Cache for posts and highlights with timestamps
 const dataCache: {
   posts: { [username: string]: { data: Post[]; timestamp: number } };
@@ -65,6 +140,7 @@ const ProfilePage = ({
   const [postsLoading, setPostsLoading] = useState(true);
   const [highlightsLoading, setHighlightsLoading] = useState(true);
   const [addStory, setAddStory] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
 
@@ -173,6 +249,74 @@ const ProfilePage = ({
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {showNotifications && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowNotifications(false)}
+          >
+            <motion.div
+              className="bg-background w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[80vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-background border-b border-border p-4 flex justify-between items-center">
+                <h2 className="text-xl font-semibold">Profile Visitors</h2>
+                <button
+                  onClick={() => setShowNotifications(false)}
+                  className="text-foreground/60 hover:text-foreground"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div className="p-4">
+                {/* Profile visitors list */}
+                {profileVisitors.map((visitor, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 py-3 border-b border-border last:border-0"
+                  >
+                    <div className="w-12 h-12 rounded-full  p-0.5 shrink-0">
+                      <img
+                        src={visitor.avatar}
+                        alt={visitor.username}
+                        className="w-full h-full rounded-full object-cover bg-background"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold">
+                        {visitor.username}
+                      </p>
+                      <p className="text-xs text-foreground/60 mt-0.5">
+                        {visitor.visitCount} times
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div
         className="h-full flex flex-col"
         animate={{ x: addStory ? "100%" : 0 }}
@@ -201,6 +345,7 @@ const ProfilePage = ({
                   <path d="M21 11h-8V3a1 1 0 1 0-2 0v8H3a1 1 0 1 0 0 2h8v8a1 1 0 1 0 2 0v-8h8a1 1 0 1 0 0-2Z"></path>
                 </svg>
               </div>
+
               <div className="flex items-center justify-center gap-0.5 text-xl font-semibold -mt-1">
                 {profileLoading ? (
                   <Skeleton className="w-24 h-6" />
@@ -208,7 +353,7 @@ const ProfilePage = ({
                   <>
                     <div className="flex items-center justify-center gap-1.5">
                       {profile?.username || "Username"}
-                      <svg
+                      {/* <svg
                         className="mt-0.5"
                         aria-label="Verified"
                         fill="rgb(0, 149, 246)"
@@ -222,7 +367,7 @@ const ProfilePage = ({
                           d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z"
                           fill-rule="evenodd"
                         ></path>
-                      </svg>
+                      </svg> */}
                     </div>
                     {/* <ChevronDown strokeWidth={2} size={20} className="mt-1" /> */}
                   </>
@@ -230,6 +375,16 @@ const ProfilePage = ({
               </div>
 
               <div className="flex gap-8 items-center justify-center">
+                <div
+                  className="flex relative justify-center items-center"
+                  onClick={() => setShowNotifications(true)}
+                >
+                  <img src="/icons/eye.png" className="h-8" alt="" />
+                  <div className="absolute -top-1.5 -right-4 bg-red-500 text-white text-xs font-semibold rounded-2xl px-1 py-0.5 cursor-pointer hover:bg-red-600 transition-colors">
+                    +99
+                  </div>
+                </div>
+
                 <div>
                   <svg
                     aria-label=""
@@ -243,6 +398,7 @@ const ProfilePage = ({
                     <path d="M141.537 88.9883C140.71 88.5919 139.87 88.2104 139.019 87.8451C137.537 60.5382 122.616 44.905 97.5619 44.745C97.4484 44.7443 97.3355 44.7443 97.222 44.7443C82.2364 44.7443 69.7731 51.1409 62.102 62.7807L75.881 72.2328C81.6116 63.5383 90.6052 61.6848 97.2286 61.6848C97.3051 61.6848 97.3819 61.6848 97.4576 61.6855C105.707 61.7381 111.932 64.1366 115.961 68.814C118.893 72.2193 120.854 76.925 121.825 82.8638C114.511 81.6207 106.601 81.2385 98.145 81.7233C74.3247 83.0954 59.0111 96.9879 60.0396 116.292C60.5615 126.084 65.4397 134.508 73.775 140.011C80.8224 144.663 89.899 146.938 99.3323 146.423C111.79 145.74 121.563 140.987 128.381 132.296C133.559 125.696 136.834 117.143 138.28 106.366C144.217 109.949 148.617 114.664 151.047 120.332C155.179 129.967 155.42 145.8 142.501 158.708C131.182 170.016 117.576 174.908 97.0135 175.059C74.2042 174.89 56.9538 167.575 45.7381 153.317C35.2355 139.966 29.8077 120.682 29.6052 96C29.8077 71.3178 35.2355 52.0336 45.7381 38.6827C56.9538 24.4249 74.2039 17.11 97.0132 16.9405C119.988 17.1113 137.539 24.4614 149.184 38.788C154.894 45.8136 159.199 54.6488 162.037 64.9503L178.184 60.6422C174.744 47.9622 169.331 37.0357 161.965 27.974C147.036 9.60668 125.202 0.195148 97.0695 0H96.9569C68.8816 0.19447 47.2921 9.6418 32.7883 28.0793C19.8819 44.4864 13.2244 67.3157 13.0007 95.9325L13 96L13.0007 96.0675C13.2244 124.684 19.8819 147.514 32.7883 163.921C47.2921 182.358 68.8816 191.806 96.9569 192H97.0695C122.03 191.827 139.624 185.292 154.118 170.811C173.081 151.866 172.51 128.119 166.26 113.541C161.776 103.087 153.227 94.5962 141.537 88.9883ZM98.4405 129.507C88.0005 130.095 77.1544 125.409 76.6196 115.372C76.2232 107.93 81.9158 99.626 99.0812 98.6368C101.047 98.5234 102.976 98.468 104.871 98.468C111.106 98.468 116.939 99.0737 122.242 100.233C120.264 124.935 108.662 128.946 98.4405 129.507Z"></path>
                   </svg>
                 </div>
+
                 <div className="relative">
                   <Menu size={30} />
                 </div>
@@ -310,7 +466,7 @@ const ProfilePage = ({
 
                       <div className="flex flex-col gap-0">
                         <p className="text-md font-semibold">
-                          {profile?.stats.followers
+                          {/* {profile?.stats.followers
                             ? profile.stats.followers >= 1000000
                               ? (profile.stats.followers / 1000000)
                                   .toFixed(1)
@@ -320,14 +476,16 @@ const ProfilePage = ({
                                     .toFixed(1)
                                     .replace(/\.0$/, "") + "K"
                                 : profile.stats.followers
-                            : 0}
+                            : 0} */}
+                          9,372
                         </p>
                         <p>followers</p>
                       </div>
 
                       <div className="flex flex-col gap-0">
                         <p className="text-md font-semibold">
-                          {profile?.stats.following || 0}
+                          {/* {profile?.stats.following || 0} */}
+                          2,165
                         </p>
                         <p>following</p>
                       </div>
@@ -346,7 +504,7 @@ const ProfilePage = ({
                   </>
                 ) : (
                   <div className="flex flex-col gap-0 leading-4.5">
-                    <span className="text-foreground/60">Artist</span>
+                    <span className="text-foreground/60">Blogger</span>
                     {profile?.bio.split("\n").map((line, i) => (
                       <p key={i}>{line}</p>
                     ))}
@@ -383,7 +541,7 @@ const ProfilePage = ({
                       y2="8.471"
                     ></line>
                   </svg>
-                  open2.app/7ELMETADO7 and 2 more
+                  bit.ly/jawadely and 1 more
                 </span>
 
                 <span className="text-[#0046f6]"></span>
@@ -393,7 +551,7 @@ const ProfilePage = ({
                     Professional dashboard
                   </p>
                   <p className="text-foreground/60">
-                    237m views in the last 30 days.
+                    1.3m views in the last 30 days.
                   </p>
                 </div>
                 <div className="mt-2 flex gap-2 w-full">

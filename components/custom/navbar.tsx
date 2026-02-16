@@ -76,7 +76,7 @@ const Navbar = ({
       </div>
 
       <div onClick={() => setActive("direct")} className="relative">
-        <div className="absolute bottom-3 right-[-5px] w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+        <div className="absolute bottom-0.5 right-[-5px] w-1.5 h-1.5 bg-red-500 rounded-full"></div>
         {active !== "direct" && (
           <svg
             aria-label="Messages"
