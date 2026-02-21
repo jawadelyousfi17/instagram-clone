@@ -144,7 +144,7 @@ const ProfilePage = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
 
-  const [f, setF] = useState("9,372");
+  const [f, setF] = useState("683");
 
   // Pull to refresh states
   const [pullDistance, setPullDistance] = useState(0);
@@ -232,7 +232,7 @@ const ProfilePage = ({
     setTimeout(() => {
       setIsRefreshing(false);
       setPullDistance(0);
-      setF("109k");
+      setF("100k");
     }, 500);
   };
 
