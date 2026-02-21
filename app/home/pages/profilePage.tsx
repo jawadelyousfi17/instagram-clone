@@ -493,7 +493,7 @@ const ProfilePage = ({
 
               <div className="flex gap-8 items-center justify-center">
                 <div
-                  className="flex relative justify-center items-center"
+                  className="flex relative justify-center items-center hidden"
                   onClick={() => setShowNotifications(true)}
                 >
                   <img src="/icons/eye.png" className="h-8" alt="" />
