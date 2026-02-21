@@ -40,7 +40,7 @@ const profileVisitors: ProfileVisitor[] = [
     avatar: "/images/avatars/a1.jpg",
     visitCount: 1,
   },
-   {
+  {
     username: "kr_788__",
     avatar: "/images/avatars/a0.jpeg",
     visitCount: 1,
@@ -144,65 +144,99 @@ const ProfilePage = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (!profile?.username) return;
+  const [f, setF] = useState("9,372");
 
-      // Check if we have cached data
-      const cached = dataCache.posts[profile.username];
-      const now = Date.now();
+  // Pull to refresh states
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isPulling, setIsPulling] = useState(false);
+  const touchStartY = useRef(0);
+  const pullThreshold = 80;
 
-      if (cached && now - cached.timestamp < CACHE_DURATION) {
-        // Use cached data
-        setPosts(cached.data);
-        setPostsLoading(false);
-        return;
-      }
+  const fetchPosts = async () => {
+    if (!profile?.username) return;
 
-      setPostsLoading(true);
-      const result = await getInstagramPosts(profile.username);
-      if ("error" in result) {
-        console.error(result.error);
-      } else {
-        setPosts(result);
-        // Cache the data
-        dataCache.posts[profile.username] = {
-          data: result,
-          timestamp: now,
-        };
-      }
+    // Check if we have cached data
+    const cached = dataCache.posts[profile.username];
+    const now = Date.now();
+
+    if (cached && now - cached.timestamp < CACHE_DURATION) {
+      // Use cached data
+      setPosts(cached.data);
       setPostsLoading(false);
-    };
+      return;
+    }
 
-    const fetchHighlights = async () => {
-      if (!profile?.username) return;
+    setPostsLoading(true);
+    const result = await getInstagramPosts(profile.username);
+    if ("error" in result) {
+      console.error(result.error);
+    } else {
+      setPosts(result);
+      // Cache the data
+      dataCache.posts[profile.username] = {
+        data: result,
+        timestamp: now,
+      };
+    }
+    setPostsLoading(false);
+  };
 
-      // Check if we have cached data
-      const cached = dataCache.highlights[profile.username];
-      const now = Date.now();
+  const fetchHighlights = async () => {
+    if (!profile?.username) return;
 
-      if (cached && now - cached.timestamp < CACHE_DURATION) {
-        // Use cached data
-        setHighlights(cached.data);
-        setHighlightsLoading(false);
-        return;
-      }
+    // Check if we have cached data
+    const cached = dataCache.highlights[profile.username];
+    const now = Date.now();
 
-      setHighlightsLoading(true);
-      const result = await getInstagramHighlights(profile.username);
-      if ("error" in result) {
-        console.error(result.error);
-      } else {
-        setHighlights(result);
-        // Cache the data
-        dataCache.highlights[profile.username] = {
-          data: result,
-          timestamp: now,
-        };
-      }
+    if (cached && now - cached.timestamp < CACHE_DURATION) {
+      // Use cached data
+      setHighlights(cached.data);
       setHighlightsLoading(false);
-    };
+      return;
+    }
 
+    setHighlightsLoading(true);
+    const result = await getInstagramHighlights(profile.username);
+    if ("error" in result) {
+      console.error(result.error);
+    } else {
+      setHighlights(result);
+      // Cache the data
+      dataCache.highlights[profile.username] = {
+        data: result,
+        timestamp: now,
+      };
+    }
+    setHighlightsLoading(false);
+  };
+
+  // Refresh function for pull to refresh
+  const handleRefresh = async () => {
+    if (!profile?.username || isRefreshing) return;
+
+    setIsRefreshing(true);
+
+    // Clear cache for this user to force new data fetch
+    // if (dataCache.posts[profile.username]) {
+    //   delete dataCache.posts[profile.username];
+    // }
+    // if (dataCache.highlights[profile.username]) {
+    //   delete dataCache.highlights[profile.username];
+    // }
+
+    // // Fetch fresh data
+    // await Promise.all([fetchPosts(), fetchHighlights()]);
+
+    // Add a small delay to show the refresh animation
+    setTimeout(() => {
+      setIsRefreshing(false);
+      setPullDistance(0);
+      setF("109k");
+    }, 500);
+  };
+
+  useEffect(() => {
     fetchPosts();
     fetchHighlights();
   }, [profile]);
@@ -226,12 +260,76 @@ const ProfilePage = ({
       lastScrollY.current = currentScrollY;
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      if (!scrollRef.current || isRefreshing) return;
+      const scrollTop = scrollRef.current.scrollTop;
+
+      // Only start tracking if we're at the top
+      if (scrollTop === 0) {
+        touchStartY.current = e.touches[0].clientY;
+        setIsPulling(true);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!scrollRef.current || !isPulling || isRefreshing) return;
+      const scrollTop = scrollRef.current.scrollTop;
+
+      // Only track pull if we're at the top
+      if (scrollTop === 0) {
+        const touchY = e.touches[0].clientY;
+        const distance = touchY - touchStartY.current;
+
+        if (distance > 0) {
+          // Apply resistance to the pull (makes it feel more natural)
+          const resistedDistance = Math.min(
+            distance * 0.5,
+            pullThreshold * 1.5,
+          );
+          setPullDistance(resistedDistance);
+
+          // Prevent default scrolling when pulling
+          if (distance > 10) {
+            e.preventDefault();
+          }
+        }
+      } else {
+        // Reset if user scrolled down
+        setIsPulling(false);
+        setPullDistance(0);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (!isPulling) return;
+
+      setIsPulling(false);
+
+      // Trigger refresh if we exceeded the threshold
+      if (pullDistance >= pullThreshold && !isRefreshing) {
+        handleRefresh();
+      } else {
+        setPullDistance(0);
+      }
+    };
+
     const scrollElement = scrollRef.current;
     if (scrollElement) {
       scrollElement.addEventListener("scroll", handleScroll);
-      return () => scrollElement.removeEventListener("scroll", handleScroll);
+      scrollElement.addEventListener("touchstart", handleTouchStart);
+      scrollElement.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+      scrollElement.addEventListener("touchend", handleTouchEnd);
+
+      return () => {
+        scrollElement.removeEventListener("scroll", handleScroll);
+        scrollElement.removeEventListener("touchstart", handleTouchStart);
+        scrollElement.removeEventListener("touchmove", handleTouchMove);
+        scrollElement.removeEventListener("touchend", handleTouchEnd);
+      };
     }
-  }, []);
+  }, [isPulling, pullDistance, isRefreshing, profile]);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden relative">
@@ -324,7 +422,26 @@ const ProfilePage = ({
       >
         <div className="flex-none flex flex-col gap-2"></div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto relative">
+          {/* Pull to refresh indicator */}
+          <div
+            className="absolute top-0 left-0 right-0 flex justify-center items-center pointer-events-none -z-2 bg-accent/30"
+            style={{
+              transform: `translateY(${Math.max(pullDistance - 60, -60)}px)`,
+              transition: isPulling ? "none" : "transform 0.3s ease-out",
+              opacity:
+                pullDistance > 0
+                  ? Math.min(pullDistance / pullThreshold, 1)
+                  : 0,
+            }}
+          >
+            {/* <div className="bg-background rounded-full p-8 shadow-lg"> */}
+            <div className="mt-8 py-4">
+              <div className="mt-4 black-loader"></div>
+            </div>
+            {/* </div> */}
+          </div>
+
           <div
             className={cn(
               "sticky top-0 bg-background z-10 transition-transform duration-300",
@@ -406,7 +523,13 @@ const ProfilePage = ({
             </div>
           </div>
 
-          <div className="flex flex-col mt-4">
+          <div
+            className="flex flex-col mt-4"
+            style={{
+              transform: `translateY(${isRefreshing ? pullThreshold : isPulling ? pullDistance : 0}px)`,
+              transition: isPulling ? "none" : "transform 0.3s ease-out",
+            }}
+          >
             <div className="flex gap-5 px-4 items-center mt-4">
               <div
                 className="relative rounded-full p-[3px] bg-transparent shrink-0"
@@ -477,7 +600,7 @@ const ProfilePage = ({
                                     .replace(/\.0$/, "") + "K"
                                 : profile.stats.followers
                             : 0} */}
-                          9,372
+                          {f}
                         </p>
                         <p>followers</p>
                       </div>
