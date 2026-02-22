@@ -34,7 +34,7 @@ export async function getInstagramHighlights(
     method: "POST",
     url: "https://instagram120.p.rapidapi.com/api/instagram/highlights",
     headers: {
-      "x-rapidapi-key": "763cf1c4b9msh06c005a3b61ac0ap1158e4jsn4a236ac9db52", // Best practice: process.env.RAPIDAPI_KEY
+      "x-rapidapi-key": "2a97b8c83cmsh83aa6c742f04660p14dd91jsn674d51427a4b", // Best practice: process.env.RAPIDAPI_KEY
       "x-rapidapi-host": "instagram120.p.rapidapi.com",
       "Content-Type": "application/json",
     },

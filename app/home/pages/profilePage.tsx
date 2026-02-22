@@ -144,7 +144,7 @@ const ProfilePage = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
 
-  const [f, setF] = useState("683");
+  const [f, setF] = useState("671m");
 
   // Pull to refresh states
   const [pullDistance, setPullDistance] = useState(0);
@@ -627,7 +627,7 @@ const ProfilePage = ({
                   </>
                 ) : (
                   <div className="flex flex-col gap-0 leading-4.5">
-                    <span className="text-foreground/60">Blogger</span>
+                    <span className="text-foreground/60">Athlete</span>
                     {profile?.bio.split("\n").map((line, i) => (
                       <p key={i}>{line}</p>
                     ))}
@@ -664,7 +664,7 @@ const ProfilePage = ({
                       y2="8.471"
                     ></line>
                   </svg>
-                  bit.ly/jawadely and 1 more
+                  hrbl.me/CR7Pro2Col and 4 more
                 </span>
 
                 <span className="text-[#0046f6]"></span>
@@ -674,7 +674,7 @@ const ProfilePage = ({
                     Professional dashboard
                   </p>
                   <p className="text-foreground/60">
-                    1.3m views in the last 30 days.
+                    870m views in the last 30 days.
                   </p>
                 </div>
                 <div className="mt-2 flex gap-2 w-full">
