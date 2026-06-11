@@ -60,9 +60,20 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
+                ${
+                  process.env.NODE_ENV === "production"
+                    ? `window.addEventListener('load', function() {
                   navigator.serviceWorker.register('/sw.js');
+                });`
+                    : `navigator.serviceWorker.getRegistrations().then(function(rs) {
+                  rs.forEach(function(r) { r.unregister(); });
                 });
+                if (window.caches) {
+                  caches.keys().then(function(keys) {
+                    keys.forEach(function(k) { caches.delete(k); });
+                  });
+                }`
+                }
               }
             `,
           }}

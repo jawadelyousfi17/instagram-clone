@@ -194,7 +194,17 @@ const InstagramPost = ({
       {caption && (
         <div className="px-3 pb-2">
           <span className="font-semibold text-sm mr-1">{username}</span>
-          <span className="text-sm">{caption}</span>
+          <span className="text-sm whitespace-pre-wrap">
+            {caption.split(/(#[\p{L}\p{N}_]+)/gu).map((part, i) =>
+              part.startsWith("#") ? (
+                <span key={i} className="text-[#0046f6]">
+                  {part}
+                </span>
+              ) : (
+                part
+              ),
+            )}
+          </span>
         </div>
       )}
       {/* View Comments */}

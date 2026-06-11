@@ -664,7 +664,17 @@ const ProfilePage = ({
                       y2="8.471"
                     ></line>
                   </svg>
-                  hrbl.me/CR7Pro2Col and 4 more
+                  <a
+                    href="https://www.lowes.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    www.lowes.com
+                  </a>
+                  <span className="text-foreground/60 font-normal">
+                    {" "}
+                    and 2 more
+                  </span>
                 </span>
 
                 <span className="text-[#0046f6]"></span>
